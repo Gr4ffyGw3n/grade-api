@@ -198,7 +198,6 @@ public class MongoGradeDB implements GradeDB {
         RequestBody body = RequestBody.create(mediaType, requestBody.toString());
         Request request = new Request.Builder()
                 .url("https://grade-logging-api.chenpan.ca/team")
-                .method("GET", body)
                 .addHeader("Authorization", API_TOKEN)
                 .addHeader("Content-Type", "application/json")
                 .build();
@@ -207,14 +206,17 @@ public class MongoGradeDB implements GradeDB {
             Response response = client.newCall(request).execute();
             System.out.println(response);
             JSONObject responseBody = new JSONObject(response.body().string());
+            System.out.println(responseBody);
 
             if (responseBody.getInt("status_code") == 200) {
                 JSONObject team = responseBody.getJSONObject("team");
                 JSONArray tmpMem = team.getJSONArray("members");
-                String[] members = new ArrayList<string>();
+                ArrayList<String> list = new ArrayList<String>();
                 for(int i = 0; i < tmpMem.length(); i++){
-                    members.add(tmpMem.getJSONObject(i));
+                    list.add(tmpMem.getString(i));
                 }
+                String[] members = list.toArray(new String[list.size()]);
+                System.out.println(tmpMem);
 
                 return Team.builder()
                         .name(team.getString("name"))
