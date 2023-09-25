@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MongoGradeDB implements GradeDB {
@@ -208,7 +209,17 @@ public class MongoGradeDB implements GradeDB {
             JSONObject responseBody = new JSONObject(response.body().string());
 
             if (responseBody.getInt("status_code") == 200) {
-                return;
+                JSONObject team = responseBody.getJSONObject("team");
+                JSONArray tmpMem = team.getJSONArray("members");
+                String[] members = new ArrayList<string>();
+                for(int i = 0; i < tmpMem.length(); i++){
+                    members.add(tmpMem.getJSONObject(i));
+                }
+
+                return Team.builder()
+                        .name(team.getString("name"))
+                        .members(members)
+                        .build();
             } else {
                 throw new RuntimeException(responseBody.getString("message"));
             }
