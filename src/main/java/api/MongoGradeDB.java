@@ -187,6 +187,9 @@ public class MongoGradeDB implements GradeDB {
     }
 
     @Override
+    // TODO: Implement this method
+    //       Hint: Read apiDocuments/getMyTeam.md and refer to the above
+    //             methods to help you write this code (copy-and-paste + edit as needed).
     public Team getMyTeam() {
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
@@ -195,7 +198,6 @@ public class MongoGradeDB implements GradeDB {
         RequestBody body = RequestBody.create(mediaType, requestBody.toString());
         Request request = new Request.Builder()
                 .url("https://grade-logging-api.chenpan.ca/team")
-                .method("GET", null)
                 .addHeader("Authorization", API_TOKEN)
                 .addHeader("Content-Type", "application/json")
                 .build();
@@ -204,21 +206,21 @@ public class MongoGradeDB implements GradeDB {
             Response response = client.newCall(request).execute();
             System.out.println(response);
             JSONObject responseBody = new JSONObject(response.body().string());
+            System.out.println(responseBody);
 
             if (responseBody.getInt("status_code") == 200) {
                 JSONObject team = responseBody.getJSONObject("team");
                 JSONArray tmpMem = team.getJSONArray("members");
-                ArrayList<String> members = new ArrayList<>();
+                ArrayList<String> list = new ArrayList<String>();
                 for(int i = 0; i < tmpMem.length(); i++){
-                    members.add(tmpMem.getString(i));
+                    list.add(tmpMem.getString(i));
                 }
-                String[] members_string = new String[members.size()];
-                for(int i = 0; i < members.size(); i++){
-                    members_string[i] = members.get(i);
-                }
+                String[] members = list.toArray(new String[list.size()]);
+                System.out.println(tmpMem);
+
                 return Team.builder()
                         .name(team.getString("name"))
-                        .members(members_string)
+                        .members(members)
                         .build();
             } else {
                 throw new RuntimeException(responseBody.getString("message"));
