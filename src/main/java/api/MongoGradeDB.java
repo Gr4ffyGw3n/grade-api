@@ -187,9 +187,6 @@ public class MongoGradeDB implements GradeDB {
     }
 
     @Override
-    // TODO: Implement this method
-    //       Hint: Read apiDocuments/getMyTeam.md and refer to the above
-    //             methods to help you write this code (copy-and-paste + edit as needed).
     public Team getMyTeam() {
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
@@ -198,7 +195,7 @@ public class MongoGradeDB implements GradeDB {
         RequestBody body = RequestBody.create(mediaType, requestBody.toString());
         Request request = new Request.Builder()
                 .url("https://grade-logging-api.chenpan.ca/team")
-                .method("GET", body)
+                .method("GET", null)
                 .addHeader("Authorization", API_TOKEN)
                 .addHeader("Content-Type", "application/json")
                 .build();
@@ -211,14 +208,17 @@ public class MongoGradeDB implements GradeDB {
             if (responseBody.getInt("status_code") == 200) {
                 JSONObject team = responseBody.getJSONObject("team");
                 JSONArray tmpMem = team.getJSONArray("members");
-                String[] members = new ArrayList<string>();
+                ArrayList<String> members = new ArrayList<>();
                 for(int i = 0; i < tmpMem.length(); i++){
-                    members.add(tmpMem.getJSONObject(i));
+                    members.add(tmpMem.getString(i));
                 }
-
+                String[] members_string = new String[members.size()];
+                for(int i = 0; i < members.size(); i++){
+                    members_string[i] = members.get(i);
+                }
                 return Team.builder()
                         .name(team.getString("name"))
-                        .members(members)
+                        .members(members_string)
                         .build();
             } else {
                 throw new RuntimeException(responseBody.getString("message"));
